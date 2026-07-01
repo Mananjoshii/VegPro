@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Logo from "../components/Logo";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -53,10 +54,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-50 rounded-3xl mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
+          <div className="inline-flex items-center justify-center w-24 h-24 mb-4">
+            <Logo className="w-full h-full drop-shadow-sm" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800">{t("vegpro")}</h1>
           <p className="text-gray-500 mt-1">{t("attendanceManagement")}</p>

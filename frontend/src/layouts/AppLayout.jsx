@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Logo from "../components/Logo";
 
 /**
  * Main app layout with header.
@@ -39,9 +40,7 @@ export default function AppLayout({ children }) {
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
+              <Logo className="h-8 w-8 drop-shadow-sm" />
               <h1
                 className="text-xl font-bold text-primary cursor-pointer"
                 onClick={() =>
