@@ -1,0 +1,42 @@
+// Prisma Schema for VegPro Attendance System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+model User {
+  id          String       @id @default(cuid())
+  name        String
+  mobile      String       @unique
+  password    String?      // Nullable — staff don't need passwords
+  role        Role
+  createdAt   DateTime     @default(now())
+  attendances Attendance[]
+
+  @@map("users")
+}
+
+model Attendance {
+  id          String   @id @default(cuid())
+  userId      String
+  date        String   // Stored as "YYYY-MM-DD" for easy comparison
+  checkInTime String   // Stored as "HH:MM:SS" in IST
+  status      String   @default("Present")
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date]) // One attendance per user per day
+  @@map("attendances")
+}
