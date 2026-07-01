@@ -1,11 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 /**
  * Reusable Button component with VegPro styling.
  * Large, touch-friendly with multiple variants.
- *
- * @param {string} variant - "primary" | "secondary" | "danger" | "ghost"
- * @param {string} size - "sm" | "md" | "lg" | "xl"
- * @param {boolean} fullWidth - Whether button spans full width
- * @param {boolean} loading - Shows loading state
  */
 export default function Button({
   children,
@@ -19,8 +16,10 @@ export default function Button({
   className = "",
   ...props
 }) {
+  const { t } = useTranslation();
+  
   const baseClasses =
-    "font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100";
+    "font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2";
 
   const variants = {
     primary:
@@ -55,7 +54,7 @@ export default function Button({
       {...props}
     >
       {loading ? (
-        <span className="flex items-center justify-center gap-2">
+        <>
           <svg
             className="animate-spin h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -76,8 +75,8 @@ export default function Button({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
             />
           </svg>
-          Please wait...
-        </span>
+          {t("pleaseWait")}
+        </>
       ) : (
         children
       )}

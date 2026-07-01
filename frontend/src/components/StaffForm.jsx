@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Input from "./Input";
 import Button from "./Button";
 
 /**
  * Staff add/edit form. Fields: Name, Mobile.
- *
- * @param {Object|null} staff - Existing staff data for editing (null for add)
- * @param {Function} onSubmit - Called with { name, mobile }
- * @param {boolean} loading - Submit loading state
  */
 export default function StaffForm({ staff = null, onSubmit, loading = false }) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Pre-fill for edit mode
   useEffect(() => {
     if (staff) {
       setName(staff.name || "");
@@ -24,10 +21,10 @@ export default function StaffForm({ staff = null, onSubmit, loading = false }) {
 
   const validate = () => {
     const newErrors = {};
-    if (!name.trim()) newErrors.name = "Name is required.";
-    if (!mobile.trim()) newErrors.mobile = "Mobile number is required.";
+    if (!name.trim()) newErrors.name = t("nameRequired");
+    if (!mobile.trim()) newErrors.mobile = t("mobileRequired");
     else if (!/^\d{10}$/.test(mobile))
-      newErrors.mobile = "Enter a valid 10-digit number.";
+      newErrors.mobile = t("validMobileError");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -43,16 +40,16 @@ export default function StaffForm({ staff = null, onSubmit, loading = false }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         id="staff-name"
-        label="Name"
-        placeholder="Enter full name"
+        label={t("name")}
+        placeholder={t("namePlaceholder")}
         value={name}
         onChange={(e) => setName(e.target.value)}
         error={errors.name}
       />
       <Input
         id="staff-mobile"
-        label="Mobile Number"
-        placeholder="Enter 10-digit number"
+        label={t("mobileNumber")}
+        placeholder={t("mobilePlaceholder")}
         type="tel"
         inputMode="numeric"
         maxLength={10}
@@ -61,7 +58,7 @@ export default function StaffForm({ staff = null, onSubmit, loading = false }) {
         error={errors.mobile}
       />
       <Button type="submit" fullWidth loading={loading}>
-        {staff ? "Update Staff" : "Add Staff"}
+        {staff ? t("update") : t("addStaff")}
       </Button>
     </form>
   );

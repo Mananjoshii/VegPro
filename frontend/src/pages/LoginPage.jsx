@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
-/**
- * Login page — single entry point for both staff and admin.
- * Staff: enter mobile → auto-login.
- * Admin: enter mobile → show password field → verify → login.
- */
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,9 +19,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // Validate mobile
     if (!/^\d{10}$/.test(mobile)) {
-      setError("Please enter a valid 10-digit mobile number.");
+      setError(t("validMobileError"));
       return;
     }
 
@@ -34,21 +30,18 @@ export default function LoginPage() {
       const result = await login(mobile, showPassword ? password : null);
 
       if (result.requirePassword) {
-        // Admin detected — show password field
         setShowPassword(true);
         setLoading(false);
         return;
       }
 
-      // Successful login — redirect based on role
       if (result.user.role === "ADMIN") {
         navigate("/admin", { replace: true });
       } else {
         navigate("/staff", { replace: true });
       }
     } catch (err) {
-      const message =
-        err.response?.data?.error?.message || "Something went wrong.";
+      const message = err.response?.data?.error?.message || t("invalidCredentials");
       setError(message);
     } finally {
       setLoading(false);
@@ -61,18 +54,20 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-50 rounded-3xl mb-4">
-            <span className="text-4xl">🌿</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">VegPro</h1>
-          <p className="text-gray-500 mt-1">Attendance Management</p>
+          <h1 className="text-3xl font-bold text-gray-800">{t("vegpro")}</h1>
+          <p className="text-gray-500 mt-1">{t("attendanceManagement")}</p>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleContinue} className="space-y-4">
           <Input
             id="login-mobile"
-            label="Mobile Number"
-            placeholder="Enter your 10-digit number"
+            label={t("mobileNumber")}
+            placeholder={t("mobilePlaceholder")}
             type="tel"
             inputMode="numeric"
             maxLength={10}
@@ -80,7 +75,6 @@ export default function LoginPage() {
             onChange={(e) => {
               setMobile(e.target.value.replace(/\D/g, ""));
               setError("");
-              // Reset password field if mobile changes
               if (showPassword) {
                 setShowPassword(false);
                 setPassword("");
@@ -89,13 +83,12 @@ export default function LoginPage() {
             autoFocus
           />
 
-          {/* Password field — only shown for admin */}
           {showPassword && (
             <div className="animate-in">
               <Input
                 id="login-password"
-                label="Password"
-                placeholder="Enter your password"
+                label={t("password")}
+                placeholder={t("passwordPlaceholder")}
                 type="password"
                 value={password}
                 onChange={(e) => {
@@ -107,7 +100,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Error message */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-danger text-sm font-medium px-4 py-3 rounded-xl">
               {error}
@@ -115,13 +107,12 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" fullWidth loading={loading} size="xl">
-            {showPassword ? "Login" : "Continue"}
+            {showPassword ? t("login") : t("continue")}
           </Button>
         </form>
 
-        {/* Footer */}
         <p className="text-center text-xs text-gray-400 mt-10">
-          © {new Date().getFullYear()} VegPro. All rights reserved.
+          © {new Date().getFullYear()} {t("vegpro")}. {t("allRightsReserved")}
         </p>
       </div>
     </div>

@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Input from "./Input";
 import Button from "./Button";
 
 /**
  * Admin add/edit form. Fields: Name, Mobile, Password.
- *
- * @param {Object|null} admin - Existing admin data for editing (null for add)
- * @param {Function} onSubmit - Called with { name, mobile, password }
- * @param {boolean} loading - Submit loading state
  */
 export default function AdminForm({ admin = null, onSubmit, loading = false }) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
@@ -17,26 +15,25 @@ export default function AdminForm({ admin = null, onSubmit, loading = false }) {
 
   const isEdit = !!admin;
 
-  // Pre-fill for edit mode
   useEffect(() => {
     if (admin) {
       setName(admin.name || "");
       setMobile(admin.mobile || "");
-      setPassword(""); // Don't pre-fill password
+      setPassword(""); 
     }
   }, [admin]);
 
   const validate = () => {
     const newErrors = {};
-    if (!name.trim()) newErrors.name = "Name is required.";
-    if (!mobile.trim()) newErrors.mobile = "Mobile number is required.";
+    if (!name.trim()) newErrors.name = t("nameRequired");
+    if (!mobile.trim()) newErrors.mobile = t("mobileRequired");
     else if (!/^\d{10}$/.test(mobile))
-      newErrors.mobile = "Enter a valid 10-digit number.";
+      newErrors.mobile = t("validMobileError");
 
     if (!isEdit && !password) {
-      newErrors.password = "Password is required.";
+      newErrors.password = t("passwordRequired");
     } else if (password && password.length < 4) {
-      newErrors.password = "Minimum 4 characters.";
+      newErrors.password = t("passwordMinLength");
     }
 
     setErrors(newErrors);
@@ -56,16 +53,16 @@ export default function AdminForm({ admin = null, onSubmit, loading = false }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         id="admin-name"
-        label="Name"
-        placeholder="Enter full name"
+        label={t("name")}
+        placeholder={t("namePlaceholder")}
         value={name}
         onChange={(e) => setName(e.target.value)}
         error={errors.name}
       />
       <Input
         id="admin-mobile"
-        label="Mobile Number"
-        placeholder="Enter 10-digit number"
+        label={t("mobileNumber")}
+        placeholder={t("mobilePlaceholder")}
         type="tel"
         inputMode="numeric"
         maxLength={10}
@@ -75,15 +72,15 @@ export default function AdminForm({ admin = null, onSubmit, loading = false }) {
       />
       <Input
         id="admin-password"
-        label={isEdit ? "New Password (leave blank to keep)" : "Password"}
-        placeholder={isEdit ? "Leave blank to keep current" : "Enter password"}
+        label={isEdit ? t("newPasswordHint") : t("password")}
+        placeholder={isEdit ? t("leaveBlankHint") : t("passwordPlaceholder")}
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         error={errors.password}
       />
       <Button type="submit" fullWidth loading={loading}>
-        {isEdit ? "Update Admin" : "Add Admin"}
+        {isEdit ? t("update") : t("addAdmin")}
       </Button>
     </form>
   );

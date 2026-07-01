@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import AppLayout from "../layouts/AppLayout";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import attendanceService from "../services/attendanceService";
 
-/**
- * Staff Dashboard — minimal interface for marking attendance.
- * Shows greeting, date/time, and a large MARK ATTENDANCE button.
- */
 export default function StaffDashboard() {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [markedToday, setMarkedToday] = useState(false);
@@ -18,13 +16,11 @@ export default function StaffDashboard() {
   const [checking, setChecking] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Update clock every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Check if already marked today
   useEffect(() => {
     const checkStatus = async () => {
       try {
@@ -50,14 +46,14 @@ export default function StaffDashboard() {
       const result = await attendanceService.checkIn();
       setMarkedToday(true);
       setCheckInTime(result.checkInTime);
-      setMessage("Attendance marked successfully! ✅");
+      setMessage(t("attendanceSuccess"));
     } catch (err) {
       const errorCode = err.response?.data?.error?.code;
       if (errorCode === "ALREADY_MARKED") {
         setMarkedToday(true);
-        setMessage("Attendance already marked today.");
+        setMessage(t("alreadyMarked"));
       } else {
-        setMessage("Failed to mark attendance. Please try again.");
+        setMessage(t("markFailed"));
       }
     } finally {
       setLoading(false);
@@ -65,7 +61,7 @@ export default function StaffDashboard() {
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString("en-IN", {
+    return date.toLocaleTimeString(i18n.language === "hi" ? "hi-IN" : "en-IN", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -74,7 +70,7 @@ export default function StaffDashboard() {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-IN", {
+    return date.toLocaleDateString(i18n.language === "hi" ? "hi-IN" : "en-IN", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -84,9 +80,9 @@ export default function StaffDashboard() {
 
   const getGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return t("goodMorning");
+    if (hour < 17) return t("goodAfternoon");
+    return t("goodEvening");
   };
 
   if (checking) {
@@ -102,15 +98,18 @@ export default function StaffDashboard() {
   return (
     <AppLayout>
       <div className="text-center space-y-8 pt-4">
-        {/* Greeting */}
         <div>
           <p className="text-lg text-gray-500">{getGreeting()},</p>
-          <h2 className="text-2xl font-bold text-gray-800 mt-1">
-            {user?.name} 👋
-          </h2>
+          <div className="flex items-center justify-center gap-2 mt-1">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {user?.name}
+            </h2>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
         </div>
 
-        {/* Date & Time */}
         <Card className="text-center">
           <p className="text-sm text-gray-500 mb-1">{formatDate(currentTime)}</p>
           <p className="text-4xl font-bold text-gray-800 font-mono">
@@ -118,16 +117,19 @@ export default function StaffDashboard() {
           </p>
         </Card>
 
-        {/* Attendance Button or Status */}
         {markedToday ? (
           <Card className="text-center bg-primary-50 border-primary/20">
-            <div className="text-5xl mb-3">✅</div>
+            <div className="flex justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
             <h3 className="text-xl font-bold text-primary-dark">
-              Attendance Marked
+              {t("attendanceMarked")}
             </h3>
             {checkInTime && (
               <p className="text-gray-600 mt-2">
-                Check-in Time:{" "}
+                {t("checkInTime")}:{" "}
                 <span className="font-semibold">{checkInTime}</span>
               </p>
             )}
@@ -141,12 +143,14 @@ export default function StaffDashboard() {
               size="xl"
               className="py-6 text-2xl font-bold shadow-lg shadow-primary/30"
             >
-              ✋ MARK ATTENDANCE
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              {t("markAttendance")}
             </Button>
           </div>
         )}
 
-        {/* Status message */}
         {message && !markedToday && (
           <div className="bg-red-50 border border-red-200 text-danger text-sm font-medium px-4 py-3 rounded-xl">
             {message}
