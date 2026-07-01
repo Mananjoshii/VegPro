@@ -11,12 +11,26 @@ const attendanceController = {
   async checkIn(req, res, next) {
     try {
       const userId = req.user.id;
-      const attendance = await attendanceService.checkIn(userId);
+      const { isHalfDay } = req.body;
+      const attendance = await attendanceService.checkIn(userId, isHalfDay);
 
       res.status(201).json({
         success: true,
         data: attendance,
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * POST /api/attendance/checkout
+   */
+  async checkOut(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const attendance = await attendanceService.checkOut(userId);
+      res.json({ success: true, data: attendance });
     } catch (error) {
       next(error);
     }
@@ -72,6 +86,41 @@ const attendanceController = {
           attendance,
         },
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * GET /api/attendance/my-summary
+   * Returns current user's monthly attendance summary.
+   */
+  async getMySummary(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const summary = await attendanceService.getMyMonthlySummary(userId);
+      res.json({ success: true, data: summary });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * GET /api/attendance/my-history
+   * Returns current user's attendance history.
+   * Query params: startDate, endDate (optional)
+   */
+  async getMyHistory(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const { startDate, endDate } = req.query;
+
+      const result = await attendanceService.getUserHistory(userId, {
+        startDate,
+        endDate,
+      });
+
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }

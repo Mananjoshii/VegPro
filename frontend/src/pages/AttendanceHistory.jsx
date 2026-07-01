@@ -213,12 +213,19 @@ export default function AttendanceHistory() {
                         {record.date}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {t("checkIn")}: {record.checkInTime}
+                        In: <span className="text-primary font-medium">{record.checkInTime}</span>
+                        {record.checkOutTime && (
+                          <> | Out: <span className="text-gray-700 font-medium">{record.checkOutTime}</span></>
+                        )}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-                        {t("present")}
+                    <div className="text-right flex flex-col items-end">
+                      <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                        record.status === "Half Day" 
+                          ? "bg-yellow-100 text-yellow-700" 
+                          : "bg-green-100 text-green-700"
+                      }`}>
+                        {record.status === "Half Day" ? t("halfDay") : t("present")}
                       </span>
                     </div>
                   </Card>

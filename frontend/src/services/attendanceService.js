@@ -7,8 +7,16 @@ const attendanceService = {
   /**
    * Mark attendance (check-in) for the current user
    */
-  async checkIn() {
-    const response = await api.post("/attendance/checkin");
+  async checkIn(isHalfDay = false) {
+    const response = await api.post("/attendance/checkin", { isHalfDay });
+    return response.data.data;
+  },
+
+  /**
+   * Mark checkout for the current user
+   */
+  async checkOut() {
+    const response = await api.post("/attendance/checkout");
     return response.data.data;
   },
 
@@ -17,6 +25,27 @@ const attendanceService = {
    */
   async getMyStatus() {
     const response = await api.get("/attendance/status");
+    return response.data.data;
+  },
+
+  /**
+   * Get current user's monthly summary
+   */
+  async getMySummary() {
+    const response = await api.get("/attendance/my-summary");
+    return response.data.data;
+  },
+
+  /**
+   * Get current user's attendance history
+   * @param {Object} filters - { startDate, endDate }
+   */
+  async getMyHistory(filters = {}) {
+    const params = {};
+    if (filters.startDate) params.startDate = filters.startDate;
+    if (filters.endDate) params.endDate = filters.endDate;
+
+    const response = await api.get("/attendance/my-history", { params });
     return response.data.data;
   },
 

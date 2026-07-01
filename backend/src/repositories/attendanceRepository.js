@@ -70,6 +70,31 @@ const attendanceRepository = {
   async countByDate(date) {
     return prisma.attendance.count({ where: { date } });
   },
+
+  /**
+   * Update an existing attendance record
+   */
+  async update(id, data) {
+    return prisma.attendance.update({
+      where: { id },
+      data,
+    });
+  },
+
+  /**
+   * Get summary for a user in a specific month
+   */
+  async getMonthlySummary(userId, yearMonth) {
+    // yearMonth is like "2026-07"
+    return prisma.attendance.findMany({
+      where: {
+        userId,
+        date: {
+          startsWith: yearMonth,
+        },
+      },
+    });
+  },
 };
 
 module.exports = attendanceRepository;

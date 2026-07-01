@@ -11,10 +11,28 @@ const router = express.Router();
 router.post("/checkin", requireAuth, attendanceController.checkIn);
 
 /**
+ * POST /api/attendance/checkout
+ * Authenticated — any user can checkout
+ */
+router.post("/checkout", requireAuth, attendanceController.checkOut);
+
+/**
  * GET /api/attendance/status
  * Authenticated — check if current user has marked today
  */
 router.get("/status", requireAuth, attendanceController.getMyStatus);
+
+/**
+ * GET /api/attendance/my-summary
+ * Authenticated — get current user's monthly summary
+ */
+router.get("/my-summary", requireAuth, attendanceController.getMySummary);
+
+/**
+ * GET /api/attendance/my-history
+ * Authenticated — get current user's attendance history
+ */
+router.get("/my-history", requireAuth, attendanceController.getMyHistory);
 
 /**
  * GET /api/attendance/today

@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import StaffManagement from "./pages/StaffManagement";
 import AdminManagement from "./pages/AdminManagement";
 import AttendanceHistory from "./pages/AttendanceHistory";
+import StaffAttendance from "./pages/StaffAttendance";
 
 /**
  * Root redirect — sends authenticated users to their dashboard.
@@ -40,6 +41,14 @@ function App() {
             element={
               <ProtectedRoute role="STAFF">
                 <StaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/attendance"
+            element={
+              <ProtectedRoute role="STAFF">
+                <StaffAttendance />
               </ProtectedRoute>
             }
           />

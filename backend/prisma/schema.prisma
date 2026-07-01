@@ -32,6 +32,7 @@ model Attendance {
   userId      String
   date        String   // Stored as "YYYY-MM-DD" for easy comparison
   checkInTime String   // Stored as "HH:MM:SS" in IST
+  checkOutTime String? // Stored as "HH:MM:SS" in IST
   status      String   @default("Present")
   createdAt   DateTime @default(now())
 

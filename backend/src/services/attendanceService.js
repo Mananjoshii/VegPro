@@ -4,7 +4,7 @@ const { AppError } = require("../middleware/errorHandler");
 
 /**
  * Get current date and time in IST (India Standard Time)
- * @returns {{ date: string, time: string }}
+ * @returns {{ date: string, time: string, yearMonth: string }}
  */
 function getISTDateTime() {
   const now = new Date();
@@ -14,8 +14,9 @@ function getISTDateTime() {
 
   const date = istDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
   const time = istDate.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
+  const yearMonth = date.substring(0, 7); // "YYYY-MM"
 
-  return { date, time };
+  return { date, time, yearMonth };
 }
 
 /**
@@ -28,9 +29,10 @@ const attendanceService = {
    * Enforces one attendance per user per day.
    *
    * @param {string} userId
+   * @param {boolean} isHalfDay
    * @returns {Object} Attendance record
    */
-  async checkIn(userId) {
+  async checkIn(userId, isHalfDay = false) {
     const { date, time } = getISTDateTime();
 
     // Check if already marked today
@@ -54,7 +56,38 @@ const attendanceService = {
       userId,
       date,
       checkInTime: time,
-      status: "Present",
+      status: isHalfDay ? "Half Day" : "Present",
+    });
+  },
+
+  /**
+   * Mark checkout for a user.
+   *
+   * @param {string} userId
+   * @returns {Object} Updated attendance record
+   */
+  async checkOut(userId) {
+    const { date, time } = getISTDateTime();
+
+    const existing = await attendanceRepository.findByUserAndDate(userId, date);
+    if (!existing) {
+      throw new AppError(
+        "You haven't checked in today.",
+        400,
+        "NOT_CHECKED_IN"
+      );
+    }
+
+    if (existing.checkOutTime) {
+      throw new AppError(
+        "You have already checked out today.",
+        409,
+        "ALREADY_CHECKED_OUT"
+      );
+    }
+
+    return attendanceRepository.update(existing.id, {
+      checkOutTime: time,
     });
   },
 
@@ -62,7 +95,7 @@ const attendanceService = {
    * Get today's attendance with summary.
    * Returns all attendance records for today plus counts.
    *
-   * @returns {Object} { records, totalStaff, presentToday, absentToday }
+   * @returns {Object} { records, totalStaff, presentToday, absentToday, totalWorkHoursStr, totalWorkMins }
    */
   async getTodayAttendance() {
     const { date } = getISTDateTime();
@@ -73,12 +106,35 @@ const attendanceService = {
       attendanceRepository.countByDate(date),
     ]);
 
+    // Calculate total working hours from records
+    let totalWorkMins = 0;
+    records.forEach((record) => {
+      if (record.checkInTime && record.checkOutTime) {
+        const [inH, inM] = record.checkInTime.split(":");
+        const [outH, outM] = record.checkOutTime.split(":");
+        
+        const inDate = new Date(2000, 0, 1, parseInt(inH), parseInt(inM));
+        const outDate = new Date(2000, 0, 1, parseInt(outH), parseInt(outM));
+        
+        const diffMs = outDate - inDate;
+        if (diffMs > 0) {
+          totalWorkMins += Math.floor(diffMs / 60000);
+        }
+      }
+    });
+
+    const hours = Math.floor(totalWorkMins / 60);
+    const mins = totalWorkMins % 60;
+    const totalWorkHoursStr = `${hours}h ${mins}m`;
+
     return {
       date,
       records,
       totalStaff,
       presentToday: presentCount,
       absentToday: totalStaff - presentCount,
+      totalWorkHoursStr,
+      totalWorkMins
     };
   },
 
@@ -119,6 +175,35 @@ const attendanceService = {
     const { date } = getISTDateTime();
     return attendanceRepository.findByUserAndDate(userId, date);
   },
+
+  /**
+   * Get monthly summary for a user.
+   *
+   * @param {string} userId
+   * @returns {Object} Summary counts for current month
+   */
+  async getMyMonthlySummary(userId) {
+    const { yearMonth } = getISTDateTime();
+    const records = await attendanceRepository.getMonthlySummary(userId, yearMonth);
+
+    let present = 0;
+    let halfDay = 0;
+
+    records.forEach(record => {
+      if (record.status === "Half Day") {
+        halfDay++;
+      } else {
+        present++;
+      }
+    });
+
+    return {
+      month: yearMonth,
+      present,
+      halfDay,
+      total: present + halfDay
+    };
+  }
 };
 
 module.exports = attendanceService;

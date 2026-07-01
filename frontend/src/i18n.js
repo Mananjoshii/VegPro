@@ -62,6 +62,12 @@ const resources = {
       "deleteConfirm": "Delete {{name}}? This will also delete their attendance records.",
       "deleteAdminConfirm": "Delete admin {{name}}?",
       
+      // Admin Dashboard Specific
+      "totalWorkHours": "Total Work Hours",
+      "quickActions": "Quick Actions",
+      "workHoursListLabel": "Hours",
+      "helloAdmin": "Hello, Admin",
+      
       // Forms
       "name": "Name",
       "namePlaceholder": "Enter full name",
@@ -81,7 +87,37 @@ const resources = {
       "applyFilter": "Apply Filter",
       "noRecords": "No attendance records found",
       "checkIn": "Check-in",
-      "days": "Days"
+      "checkOut": "Check-out",
+      "days": "Days",
+      "halfDay": "Half Day",
+      "markHalfDay": "MARK HALF DAY",
+      "checkOutBtn": "CHECK OUT",
+      "checkOutTime": "Check-out Time",
+      "monthlySummary": "Monthly Summary",
+      "checkOutSuccess": "Checked out successfully!",
+      "alreadyCheckedOut": "You have already checked out today.",
+
+      // Staff Attendance (New UI)
+      "myAttendance": "My Attendance",
+      "last7Days": "Last 7 Days",
+      "thisMonth": "This Month",
+      "custom": "Custom",
+      "all": "All",
+      "date": "Date",
+      "workHours": "Work Hours",
+      "approved": "Approved",
+      "regularize": "Regularize",
+      "na": "NA",
+      "wo": "WO",
+      "p": "P",
+      "a": "A",
+      "hd": "HD",
+
+      // Dashboard Action Buttons
+      "suggestedForYou": "Suggested for you",
+      "applyLeave": "Apply Leave",
+      "downloadSalarySlip": "Salary Slip",
+      "comingSoon": "Coming Soon"
     }
   },
   hi: {
@@ -144,6 +180,12 @@ const resources = {
       "deleteConfirm": "क्या आप {{name}} को हटाना चाहते हैं? इससे उनका उपस्थिति रिकॉर्ड भी हट जाएगा।",
       "deleteAdminConfirm": "क्या आप एडमिन {{name}} को हटाना चाहते हैं?",
       
+      // Admin Dashboard Specific
+      "totalWorkHours": "कुल काम के घंटे",
+      "quickActions": "त्वरित क्रियाएं",
+      "workHoursListLabel": "घंटे",
+      "helloAdmin": "नमस्ते, एडमिन",
+      
       // Forms
       "name": "नाम",
       "namePlaceholder": "पूरा नाम दर्ज करें",
@@ -163,7 +205,37 @@ const resources = {
       "applyFilter": "फ़िल्टर लागू करें",
       "noRecords": "कोई उपस्थिति रिकॉर्ड नहीं मिला",
       "checkIn": "आगमन (Check-in)",
-      "days": "दिन"
+      "checkOut": "प्रस्थान (Check-out)",
+      "days": "दिन",
+      "halfDay": "आधा दिन (Half Day)",
+      "markHalfDay": "आधा दिन दर्ज करें",
+      "checkOutBtn": "प्रस्थान करें",
+      "checkOutTime": "प्रस्थान का समय",
+      "monthlySummary": "मासिक सारांश",
+      "checkOutSuccess": "सफलतापूर्वक प्रस्थान किया!",
+      "alreadyCheckedOut": "आप आज पहले ही प्रस्थान कर चुके हैं।",
+
+      // Staff Attendance (New UI)
+      "myAttendance": "मेरी उपस्थिति",
+      "last7Days": "पिछले 7 दिन",
+      "thisMonth": "इस महीने",
+      "custom": "कस्टम",
+      "all": "सभी",
+      "date": "तारीख",
+      "workHours": "काम के घंटे",
+      "approved": "मंज़ूर",
+      "regularize": "नियमित करें",
+      "na": "लागू नहीं",
+      "wo": "छुट्टी (WO)",
+      "p": "P",
+      "a": "A",
+      "hd": "HD",
+
+      // Dashboard Action Buttons
+      "suggestedForYou": "आपके लिए सुझाव",
+      "applyLeave": "छुट्टी लें",
+      "downloadSalarySlip": "सैलरी स्लिप",
+      "comingSoon": "जल्द आ रहा है"
     }
   }
 };
