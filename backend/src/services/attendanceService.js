@@ -1,6 +1,7 @@
 const attendanceRepository = require("../repositories/attendanceRepository");
 const userRepository = require("../repositories/userRepository");
 const { AppError } = require("../middleware/errorHandler");
+const ExcelJS = require("exceljs");
 
 /**
  * Get current date and time in IST (India Standard Time)
@@ -203,6 +204,62 @@ const attendanceService = {
       halfDay,
       total: present + halfDay
     };
+  },
+
+  /**
+   * Export all attendance data to Excel buffer
+   */
+  async exportToExcel() {
+    const records = await attendanceRepository.findAll();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Attendance Data");
+
+    worksheet.columns = [
+      { header: "Date", key: "date", width: 15 },
+      { header: "Staff Name", key: "name", width: 25 },
+      { header: "Mobile", key: "mobile", width: 15 },
+      { header: "Check In", key: "checkInTime", width: 15 },
+      { header: "Check Out", key: "checkOutTime", width: 15 },
+      { header: "Status", key: "status", width: 15 },
+      { header: "Work Hours", key: "workHours", width: 15 },
+    ];
+
+    records.forEach((record) => {
+      let workHours = "N/A";
+      if (record.checkInTime && record.checkOutTime) {
+        const [inH, inM] = record.checkInTime.split(":");
+        const [outH, outM] = record.checkOutTime.split(":");
+        
+        const inDate = new Date(2000, 0, 1, parseInt(inH), parseInt(inM));
+        const outDate = new Date(2000, 0, 1, parseInt(outH), parseInt(outM));
+        
+        const diffMs = outDate - inDate;
+        if (diffMs > 0) {
+          const totalWorkMins = Math.floor(diffMs / 60000);
+          const hours = Math.floor(totalWorkMins / 60);
+          const mins = totalWorkMins % 60;
+          workHours = `${hours}h ${mins}m`;
+        }
+      }
+
+      worksheet.addRow({
+        date: record.date,
+        name: record.user?.name || "Unknown",
+        mobile: record.user?.mobile || "Unknown",
+        checkInTime: record.checkInTime,
+        checkOutTime: record.checkOutTime || "-",
+        status: record.status,
+        workHours: workHours,
+      });
+    });
+
+    // Style headers
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).alignment = { horizontal: "center" };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
   }
 };
 

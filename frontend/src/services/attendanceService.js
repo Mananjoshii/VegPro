@@ -70,6 +70,32 @@ const attendanceService = {
     const response = await api.get(`/attendance/user/${userId}`, { params });
     return response.data.data;
   },
+
+  /**
+   * Export all attendance data to Excel (admin only)
+   */
+  async exportData() {
+    const response = await api.get("/attendance/export", {
+      responseType: "blob", // Important for receiving binary data
+    });
+    
+    // Create a blob from the response data
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    
+    // Create a link element, set its href to the blob, and trigger download
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "attendance_data.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  },
 };
 
 export default attendanceService;

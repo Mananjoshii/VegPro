@@ -95,6 +95,19 @@ const attendanceRepository = {
       },
     });
   },
+  /**
+   * Get all attendance records across all dates
+   */
+  async findAll() {
+    return prisma.attendance.findMany({
+      include: {
+        user: {
+          select: { id: true, name: true, mobile: true, role: true },
+        },
+      },
+      orderBy: [{ date: "desc" }, { checkInTime: "desc" }],
+    });
+  },
 };
 
 module.exports = attendanceRepository;

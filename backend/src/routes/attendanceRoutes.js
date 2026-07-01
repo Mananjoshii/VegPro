@@ -51,4 +51,10 @@ router.get(
   attendanceController.getUserHistory
 );
 
+/**
+ * GET /api/attendance/export
+ * Admin only — exports all attendance records to Excel
+ */
+router.get("/export", requireAuth, requireAdmin, attendanceController.exportData);
+
 module.exports = router;
