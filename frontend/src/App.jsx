@@ -8,7 +8,6 @@ import StaffManagement from "./pages/StaffManagement";
 import AdminManagement from "./pages/AdminManagement";
 import AttendanceHistory from "./pages/AttendanceHistory";
 import StaffAttendance from "./pages/StaffAttendance";
-import FreeTierLock from "./components/FreeTierLock";
 
 /**
  * Root redirect — sends authenticated users to their dashboard.
@@ -29,13 +28,9 @@ function RootRedirect() {
  * App component with routing configuration.
  */
 function App() {
-  // Toggle this flag to show/hide the pseudo pricing lock screen
-  const isFreeTierOver = true;
-
   return (
     <BrowserRouter>
       <AuthProvider>
-        {isFreeTierOver && <FreeTierLock />}
         <Routes>
           {/* Public route */}
           <Route path="/" element={<RootRedirect />} />
